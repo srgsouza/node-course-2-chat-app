@@ -25,6 +25,18 @@ app.use(express.static(publicPath));  // 'app.use' is how we register a middlewa
 io.on('connection', (socket) => { // register an event listener. requires a callback function
   console.log('New user connected');
 
+  socket.emit('newMessage', {  // sends welcome message to the user that joined the chat
+    from: 'Admin',
+    text: 'Welcome to the chat',
+    createdAt: new Date().getTime()
+  });
+
+  socket.broadcast.emit('newMessage', {
+    from: 'Admin',
+    text: 'New user joined',
+    createdAt: new Date().getTime()
+  });
+
   // listens for a message from the client 'createMessage' - index.js has an emit function for it
   socket.on('createMessage', (message) => {
     console.log('createMessage', message);
@@ -33,6 +45,11 @@ io.on('connection', (socket) => { // register an event listener. requires a call
       text: message.text,  // 'message.from' comes from the client - see emit function in index.js
       createdAt: new Date().getTime()
     });
+    // socket.broadcast.emit('newMessage', {  // broadcast goes to everyone but the sender
+    //   from: message.from,
+    //   text: message.text,
+    //   createdAt: new Date().getTime()
+    // });
   });
 
   socket.on('disconnect', () => {
