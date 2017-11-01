@@ -30,9 +30,10 @@ io.on('connection', (socket) => { // register an event listener. requires a call
   socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user joined'));
 
   // listens for a message from the client 'createMessage' - index.js has an emit function for it
-  socket.on('createMessage', (message) => {
+  socket.on('createMessage', (message, callback) => {  // callback is used for acknowledgments - ie. send error msg back to the client
     console.log('createMessage', message);
     io.emit('newMessage', generateMessage(message.from, message.text));
+    callback('This is from the server');
     // socket.broadcast.emit('newMessage', {  // broadcast goes to everyone but the sender
     //   from: message.from,
     //   text: message.text,
