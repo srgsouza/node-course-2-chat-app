@@ -25,16 +25,14 @@ app.use(express.static(publicPath));  // 'app.use' is how we register a middlewa
 io.on('connection', (socket) => { // register an event listener. requires a callback function
   console.log('New user connected');
 
-  // emits a message to the client - index.js has a listener for it
-  socket.emit('newMessage', {
-    from: 'sergio',
-    text: 'Hey. this is a text from the server',
-    createdAt: 123
-  });
-
   // listens for a message from the client 'createMessage' - index.js has an emit function for it
   socket.on('createMessage', (message) => {
     console.log('createMessage', message);
+    io.emit('newMessage', {  // emits to ALL connections (vs. socket.emit, which emits to a single connection)
+      from: message.from,  // 'message.from' comes from the client - see emit function in index.js
+      text: message.text,  // 'message.from' comes from the client - see emit function in index.js
+      createdAt: new Date().getTime()
+    });
   });
 
   socket.on('disconnect', () => {
