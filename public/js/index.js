@@ -40,11 +40,13 @@ socket.on('newLocationMessage', function (message) {
 jQuery('#message-form').on('submit', function (e) {
   e.preventDefault();
 
+  var messageTextBox = jQuery('[name=message]');
+
   socket.emit('createMessage', {
     from: 'User',
-    text: jQuery('[name=message]').val()
+    text: messageTextBox.val()
   }, function () {
-
+    messageTextBox.val('');  // clears the value of the textbox
   });
 });
 
@@ -55,12 +57,16 @@ locationButton.on('click', function () { // same as jQuery('#send-location').on
     return alert('Geolocation not supported by your browser.'); // return alert if browser has no support/access
   }
 
+  locationButton.attr('disabled', 'disabled').text('Sending location...');  // disables the location button after it is clicked (will be re-enabled down bellow)
+
   navigator.geolocation.getCurrentPosition(function (position) {  // this executes if browser has access to geolocation function
+    locationButton.removeAttr('disabled').text('Send location'); // removes the attribute that disabled the location button
     socket.emit('createLocationMessage', {  // emits message to server with lat and lng data
       latitute: position.coords.latitude,   // coordinate variables - I used chrome browser dev tool extension to see these variables
-      longitude: position.coords.longitude
+      longitude: position.coords.longitude // removes the attribute that disabled the location button
     });
   }, function () {
+    locationButton.removeAttr('disabled').text('Send location');
     alert('Unable to fetch location.');
   });
 });

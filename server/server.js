@@ -33,7 +33,7 @@ io.on('connection', (socket) => { // register an event listener. requires a call
   socket.on('createMessage', (message, callback) => {  // callback is used for acknowledgments - ie. send error msg back to the client
     console.log('createMessage', message);
     io.emit('newMessage', generateMessage(message.from, message.text));
-    callback('This is from the server');
+    callback();
   });
 
   // listens for the geolocation message coming from the client
