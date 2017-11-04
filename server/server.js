@@ -3,7 +3,7 @@ const express = require('express');
 const socketIO = require('socket.io'); // enables realtime, bi-directional communication between web clients and servers.
 const http = require('http');  // Required to integrate socket io functionality
 
-const {generateMessage} = require('./utils/message');
+const {generateMessage, generateLocationMessage} = require('./utils/message');
 // console.log(__dirname + '/../public'); // "old" way
 // console.log(publicPath);     // using 'path.join()  yields cleaner code
 const publicPath = path.join(__dirname, '../public');
@@ -34,11 +34,11 @@ io.on('connection', (socket) => { // register an event listener. requires a call
     console.log('createMessage', message);
     io.emit('newMessage', generateMessage(message.from, message.text));
     callback('This is from the server');
-    // socket.broadcast.emit('newMessage', {  // broadcast goes to everyone but the sender
-    //   from: message.from,
-    //   text: message.text,
-    //   createdAt: new Date().getTime()
-    // });
+  });
+
+  // listens for the geolocation message coming from the client
+  socket.on('createLocationMessage', (coords) => {
+    io.emit('newLocationMessage', generateLocationMessage('Admin', coords.latitute, coords.longitude));
   });
 
   socket.on('disconnect', () => {
