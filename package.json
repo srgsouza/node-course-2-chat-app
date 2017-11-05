@@ -15,10 +15,10 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.16.2",
+    "moment": "^2.19.1",
     "socket.io": "^2.0.4"
   },
   "devDependencies": {
-    "expect": "^21.2.1",
-    "mocha": "^4.0.1"
+    "expect": "^21.2.1"
   }
 }
