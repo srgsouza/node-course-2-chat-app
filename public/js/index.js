@@ -3,6 +3,23 @@
 
 var socket = io();
 
+// enables autoscrolling
+function scrollToBottom () {
+  // Selectors
+  var messages = jQuery('#messages');
+  var newMessage = messages.children('li:last-child');
+  // Heights
+  var clientHeight = messages.prop('clientHeight');
+  var scrollTop = messages.prop('scrollTop');
+  var scrollHeight = messages.prop('scrollHeight');
+  var newMessageHeight = newMessage.innerHeight();
+  var lastMessageHeight = newMessage.prev().innerHeight();
+
+  if (clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight) {
+    console.log('Should scroll');
+    messages.scrollTop(scrollHeight);
+  }
+}
 
 socket.on('connect', function () {  // connect is a built-in listener
   console.log('Connected to Server');
@@ -22,6 +39,7 @@ socket.on('newMessage', function (message) { // listening for new messages from 
   });
 
   jQuery('#messages').append(html);
+  scrollToBottom();
   // // Code bellow was used prior to implementation of the template engine mustache.js
   // var formattedTime = moment(message.createdAt).format('h:mm a');
   // var li = jQuery('<li></li>');
@@ -40,14 +58,8 @@ socket.on('newLocationMessage', function (message) {
   });
 
   jQuery('#messages').append(html);
+  scrollToBottom();
 });
-
-// socket.emit('createMessage', {
-//   from: 'Client Frank',
-//   text: 'Hi'
-// }, function (data) {  // 'data' comes from the callback function in server.js
-//   console.log('Got it (Generated in the client and emitted to server', data);
-// });
 
 jQuery('#message-form').on('submit', function (e) {
   e.preventDefault();
