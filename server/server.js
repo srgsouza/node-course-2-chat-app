@@ -49,16 +49,22 @@ io.on('connection', (socket) => { // register an event listener. requires a call
     callback();
   });
 
-  // listens for a message from the client 'createMessage' - index.js has an emit function for it
+  // listens for a message from the client 'createMessage' - chat.js has an emit function for it
   socket.on('createMessage', (message, callback) => {  // callback is used for acknowledgments - ie. send error msg back to the client
-    console.log('createMessage', message);
-    io.emit('newMessage', generateMessage(message.from, message.text));
+    var user = users.getUser(socket.id);
+
+    if (user && isRealString(message.text)) { // if user exists and message is valid
+      io.to(user.room).emit('newMessage', generateMessage(user.name, message.text));
+    }
     callback();
   });
 
   // listens for the geolocation message coming from the client
   socket.on('createLocationMessage', (coords) => {
-    io.emit('newLocationMessage', generateLocationMessage('Admin', coords.latitute, coords.longitude));
+    var user = users.getUser(socket.id);
+    if (user) {
+      io.to(user.room).emit('newLocationMessage', generateLocationMessage(user.name, coords.latitute, coords.longitude));
+    }
   });
 
   socket.on('disconnect', () => { // when a user disconnects...
